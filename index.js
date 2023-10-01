@@ -41,10 +41,12 @@ app.post('/api/register', async (req, res) => {
 // create a parking payment 
 app.post('/api/parking-payment', async (req, res) => {
     try {
+      console.log(req.body);
       const { time, carNumber, name, email, phoneNumber } = req.body;
+
   
       // Check if the user with the given userId exists
-      let user = await User.findOne(email);
+      let user = await User.findOne({email});
   
       // If the user doesn't exist, create a new user
       if (!user) {
@@ -73,7 +75,7 @@ app.post('/api/parking-payment', async (req, res) => {
       // Respond with the QR code image and other details
       res.status(201).json({
         message: 'Parking payment successful',
-        qrCode: qrCodeBuffer.toString('base64'),
+        qrCode: "data:image/png;base64,"+qrCodeBuffer.toString('base64'),
       });
     } catch (error) {
       console.error(error);
@@ -140,7 +142,7 @@ app.get('/api/user/:userId', async (req, res) => {
   });
 
 // Start the server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
