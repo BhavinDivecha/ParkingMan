@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const QRCode = require('qrcode');
 const Parking = require('./Model/payment');
 const Razorpay = require('razorpay');
+const {sendEmail}=require('./mailer');
 var instance = new Razorpay({ key_id: 'rzp_test_mSEHCojzJFuuF0', key_secret: 'dLCAwhEeRENFpKaleJ64dnHx'})
 
 var cors = require('cors');
@@ -71,7 +72,23 @@ app.post('/api/parking-payment', async (req, res) => {
       });
   
       const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
-  
+      const content=`<!DOCTYPE html>
+      <html>
+      <body>
+          <h1>Welcome to EasyPark</h1>
+          <p>We provide parking in an easy and quick way near you.</p>
+          <p>User Data:</p>
+          <ul>
+              <li><strong>Name:</strong> {{name}}</li>
+              <li><strong>Email:</strong> {{email}}</li>
+              <li><strong>Phone Number:</strong> {{phone}}</li>
+              <li><strong>Car Number:</strong> {{carNumber}}</li>
+          </ul>
+          <img src="${"data:image/png;base64,"+qrCodeBuffer.toString('base64')}" alt="QR Code">
+      </body>
+      </html>
+      `;
+      sendEmail(email,"Payment successful",content);
       // Respond with the QR code image and other details
       res.status(201).json({
         message: 'Parking payment successful',
@@ -146,4 +163,3 @@ const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
