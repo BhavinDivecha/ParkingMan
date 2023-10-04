@@ -85,7 +85,7 @@ app.post('/api/parking-payment', async (req, res) => {
               <li><strong>Phone Number:</strong> ${phoneNumber}</li>
               <li><strong>Car Number:</strong> ${carNumber}</li>
           </ul>
-          <img src="data:image/png;base64,${_qrCodeData}" alt="QR Code">
+          <a href="data:image/png;base64,${_qrCodeData}" alt="QR Code">Open Qr</a>
       </body>
       </html>
       `;
