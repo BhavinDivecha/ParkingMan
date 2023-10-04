@@ -72,24 +72,35 @@ app.post('/api/parking-payment', async (req, res) => {
       });
   
       const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
-      const _qrCodeData=qrCodeBuffer.toString('base64');
-      const content=`<!DOCTYPE html>
-      <html>
-      <body>
-          <h1>Welcome to EasyPark</h1>
-          <p>We provide parking in an easy and quick way near you.</p>
-          <p>User Data:</p>
-          <ul>
-              <li><strong>Name:</strong> ${name}</li>
-              <li><strong>Email:</strong> ${email}</li>
-              <li><strong>Phone Number:</strong> ${phoneNumber}</li>
-              <li><strong>Car Number:</strong> ${carNumber}</li>
-          </ul>
-          <a href="data:image/png;base64,${_qrCodeData}" alt="QR Code">Open Qr</a>
-      </body>
-      </html>
-      `;
-      sendEmail(email,"Payment successful",content);
+      var imageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQQAAAEECAYAAADOCEoKAAAAAklEQVR4AewaftIAABBfSURBVO3BQY7c2JIAQXei7n9ln1pwEasHEMyU9HvCzH6x1lq/LtZa63ax1lq3i7XWul2stdbtYq21bhdrrXW7WGut28Vaa90u1lrrdrHWWreLtda6Xay11u1irbVuF2utdbtYa63bDy+p/EkVJyonFScqU8Wk8kTFicpU8YbKVDGpfFLFJ6m8UTGpTBVPqJxUnKj8SRVvXKy11u1irbVuF2utdfvhwyo+SeWNiicqTipOVCaVqeJEZap4Q+Wk4pNUpopJ5aTiCZWTiknlpGKqmFTeqPgklU+6WGut28Vaa90u1lrr9sOXqTxR8YTKVPGEyp+k8oTKExVPqLxRMVU8UXGi8oTKScWkcqLyTSpPVHzTxVpr3S7WWut2sdZatx/+n1F5omJSmSomlaliUjmpmFROKk5UTiomlaniCZWTikllqnii4kRlUpkqJpWpYlL5L7tYa63bxVpr3S7WWuv2w3+MyknFpDJVTCpvqDyhclIxqUwVT6icqJxUvFFxUjGpTCpTxRsV/59drLXW7WKttW4Xa611++HLKv6miknlmyomlaliUjmpOKl4ouIJlanipOIJlaliUjmpmFSmiknlROWk4pMq/iUXa611u1hrrdvFWmvdfvgwlb+pYlKZKiaVJyomlanijYpJZaqYVKaKJ1SmiidUpopJZap4o2JSmSomlaliUpkqJpUTlaniROVfdrHWWreLtda6Xay11u1irbVuF2utdbtYa63bDy+p/EkVU8Wk8kkqJxUnKicVk8obFZPKicpUcaIyVUwqU8WkclIxqZxUnKicVJyovKEyVZyoPFHxSRdrrXW7WGut28Vaa91++LCKT1I5UZkqJpVJZaqYVKaKSWVSmSomlaliUpkqnlB5o+KJiknlmypOVKaKE5UnKk4qnlB5omJSOal4omJSmVSmim9SmSreqPikiv8lF2utdbtYa63bxVpr3X54qWJSmSqeUJkqJpU3VKaKSWWqmFSmikllqjhRmSpOKiaVk4o3VE5UpopJ5W9SmSomlZOKJ1SmiknlpGJSOVGZKt64WGut28Vaa90u1lrr9sOXqbyhMlWcqJxUTConKlPFpDJVTCpvqDxRMam8UTGpTBWTylQxqZxUTCpPqJyo/E0VT1RMKlPFJ12stdbtYq21bhdrrXX74S+rmFSmijdU3qh4QmWqmFSmiknlpGJSmVSmiidUJpWpYlKZKt5QOamYVKaKSeWk4gmVT1L5l1ystdbtYq21bhdrrXWzX7yg8kbFicoTFZPKGxWTyknFEypTxaQyVUwqb1R8kspUcaIyVbyh8kbFicpUMalMFZPKVDGpnFR808Vaa90u1lrrdrHWWrcfPqxiUnlCZao4UTmpmFROKiaVk4onVKaKSWWqmFSmiknlpOJEZao4UXlC5QmVJyomlaliUplUpoqpYlI5UTlReULlpOKNi7XWul2stdbtYq21bvaLf4jKScWkclIxqUwVk8oTFZ+kMlW8oXJS8U0qU8WkclJxovJGxaTyJ1U8oTJVfNLFWmvdLtZa63ax1lq3H/4ylZOKk4onKiaVk4oTlZOKE5UnVKaKSeUNlZOKSeWNiknlkyomlUnlpGJSOak4UZlUpopJZar4pou11rpdrLXW7WKttW72iw9SOal4QuWJikllqjhROamYVD6pYlKZKiaVqeJEZap4QmWqmFSeqDhROan4l6mcVEwqJxWTylTxxsVaa90u1lrrdrHWWrcfPqxiUnlCZao4UTmpmFROKiaVk4onVKaKSWWqeONirbVuF2utdbtYa62b/eIFlZOKSeVvqjhROamYVKaKE5UnKp5QeaLiROWk4gmVT6qYVKaKSWWqOFE5qThRmSomlanijYu11rpdrLXW7WKttW72i3+YylTxTSpvVJyoTBVPqEwVJyqfVDGpPFExqUwVk8obFZPKVHGiMlV80sVaa90u1lrrdrHWWjf7xVpr/bpYa63bxVpr3S7WWut2sdZat4u11rpdrLXW7WKttW4/fJnKScWkMlU8oTJVnKicVHySylRxUnFS8YbKVPE3qUwVk8oTFZPKVHFSMalMFScqJxWTyqTyJ12stdbtYq21bhdrrXX74aWKb1KZKt5QmSomlUnlpGJSmSomlZOKE5U3Kp5Q+aaKE5Wp4qTik1ROVE4qJpWTir/pYq21bhdrrXW7WGutm/3iD1J5omJSOamYVJ6omFTeqHhCZao4UTmpmFSmiknlpGJSOan4JJUnKk5UTiomlaliUjmpmFROKk5UTipOVL5JZar4pIu11rpdrLXW7WKttW72ixdUPqniCZVPqnhC5ZMqJpUnKt5QeaLiROWk4gmVT6qYVKaKSWWqOFE5qThRmSomlanijYu11rpdrLXW7WKttW72i3+MpWpYqqYVE5UTiqmiknlDZWpYqqYVE4qJpWTikllqphUJpUnVKaKJ1ROVE4q3lA5qZhUpopJ5aTiCZWpYlKZKt64WGut28Vaa90u1lrrZr/4h6icVJyonFRMKicVJyonFScqU8WkclLxhsobFZPKVHGiMlVMKlPFpHJS8YTKScUTKk9UnKhMFZ90sdZat4u11rpdrLXWzX7xgsoTFZPKVPFNKlPFpPJGxYnKVDGpnFRMKlPFn6QyVZyo/E0Vk8pUMalMFZPKGxUnKlPFpDJVvHGx1lq3i7XWul2stdbNfvFBKicVk8pUMamcVEwq31QxqUwVk8oTFU+onFScqJxUPKFyUvFJKlPFGypTxaTyRMWkclJxonJS8cbFWmvdLtZa63ax1lq3H15SeaPipGJSOak4UZkqJpVJZaqYVKaKSWVSmSomlaliUpkqnlB5o+KJiknlmypOVKaKE5UnKk4qnlB5omJSOal4omJSmVSmim9SmSreqPikiv8lF2utdbtYa63bxVpr3X54qWJSmSqeUJkqJpU3VKaKSWWqmFSmikllqjhRmSpOKiaVk4o3VE5UpopJ5W9SmSomlZOKJ1SmiknlpGJSOVGZKt64WGut28Vaa90u1lrr9sOXqbyhMlWcqJxUTConKlPFpDJVTCpvqDxRMam8UTGpTBWTylQxqZxUTCpPqJyo/E0VT1RMKlPFJ12stdbtYq21bhdrrXX74S+rmFSmijdU3qh4QmWqmFSmiknlpGJSmVSmiidUJpWpYlKZKt5QOamYVKaKSeWk4gmVT1L5l1ystdbtYq21bhdrrXWzX7ygMlVMKlPFpDJVPKEyVUwqJxWTyknFpHJSMamcVDyhMlVMKk9UPKFyUjGpPFExqbxRMalMFScqJxWTyknFpMlVMKicVJyonFZPKGyqfVPFNF2utdbtYa63bxVpr3X74soonVD5JZap4omJSeUJlqjhROamYVCaVE5U3VKaKJyomlaliUjmpmFROKk5UTipOVL5JZar4pIu11rpdrLXW7WKttW72iw9SOal4QuWJikllqjhROamYVD6pYlKZKiaVqeJEZap4QmWqmFSeqDhROan4l6mcVEwqJxWTylTxxsVaa90u1lrrdrHWWrcfPqxiUnlCZao4UTmpmFROKiaVk4onVKaKSWWqeONirbVuF2utdbtYa62b/eIFlZOKSeVvqjhROamYVKaKE5UnKp5QeaLiROWk4gmVT6qYVKaKSWWqOFE5qThRmSomlanijYu11rpdrLXW7WKttW72i3+YylTxTSpvVJyoTBVPqEwVJyqfVDGpPFExqUwVk8obFZPKVHGiMlV80sVaa90u1lrrdrHWWjf7xVpr/bpYa63bxVpr3S7WWut2sdZat4u11rpdrLXW7WKttW4Xa611u1hrrdvFWmvdLtZa63ax1lq3i7XWul2stdbtYq21bv8HZzp/d+3l46MAAAAASUVORK5CYII=';
+
+// Create the email content
+const emailContent = `
+   <h1>Welcome to Our Service</h1>
+   <p>Here's your QR code:</p>
+   <img src="${imageData}" alt="QR Code" />
+`;
+      // const _qrCodeData=qrCodeBuffer.toString('base64');
+      // const content=`<!DOCTYPE html>
+      // <html>
+      // <body>
+      //     <h1>Welcome to EasyPark</h1>
+      //     <p>We provide parking in an easy and quick way near you.</p>
+      //     <p>User Data:</p>
+      //     <ul>
+      //         <li><strong>Name:</strong> ${name}</li>
+      //         <li><strong>Email:</strong> ${email}</li>
+      //         <li><strong>Phone Number:</strong> ${phoneNumber}</li>
+      //         <li><strong>Car Number:</strong> ${carNumber}</li>
+      //     </ul>
+      //     <a href="data:image/png;base64,${_qrCodeData}" alt="QR Code">Open Qr</a>
+      // </body>
+      // </html>
+      // `;
+      // Base64 encoded image data
+      
+
+      sendEmail(email,"Payment successful",emailContent);
       // Respond with the QR code image and other details
       res.status(201).json({
         message: 'Parking payment successful',
