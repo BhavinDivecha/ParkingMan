@@ -144,17 +144,18 @@
   <body>
     <div class="main-block">
       <div class="left-part">
-        <i class="fas fa-car fa-6x"></i>
-        <h1>Welcome to EasyPark</h1>
-        <p>We provide parking in easy and quick way near you..</p>
-        <!-- <div class="btn-group">
-          <a class="btn-item" href="https://www.w3docs.com/learn-html.html"
-            >Learn HTML</a
-          >
-          <a class="btn-item" href="https://www.w3docs.com/quiz/#"
-            >Select Quiz</a
-          >
-        </div> -->
+         <!-- Placeholder for QR code image -->
+         <div id="qrCodePlaceholder" style="display: none;">
+          <img src="" alt="QR Code" id="qrCodeImage" />
+          <h3>Use this QR Code for entry</h3>
+        </div>
+        
+        <!-- Content to be displayed before payment -->
+        <div id="contentBeforePayment">
+          <i class="fas fa-car fa-6x"></i>
+          <h1>Welcome to EasyPark</h1>
+          <p>We provide parking in an easy and quick way near you.</p>
+        </div>
       </div>
       <form action="/">
         <div class="title">
@@ -168,7 +169,7 @@
             name="name"
             placeholder="Full name"
           />
-          <input required type="text" name="name" placeholder="Email" />
+          <input required type="text" name="email" placeholder="Email" />
           <!-- <input
             required
             type="tel"
@@ -188,10 +189,10 @@
           <input
             required
             type="carnumber"
-            name="name"
+            name="carnumber"
             placeholder="Car number"
           />
-          <select>
+          <select name="time-duration">
             <option value="time-duration" selected>Select-time*</option>
             <option value=""></option>
             <option value=""></option>
@@ -202,14 +203,196 @@
             <option value=""></option>
           </select>
         </div>
-        <div class="checkbox">
+        <!-- <div class="checkbox">
           <input type="checkbox" name="checkbox" /><span
             >I agree to the <a href="">Privacy Poalicy for EasyPark.</a></span
           >
-        </div>
-        <button type="submit" href="index.html">Submit</button>
+        </div> -->
+        <button type="submit">Pay Now</button>
       </form>
-      <img src="data:image/png;base64,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"/>
     </div>
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Define your variables here
+        const formData = {
+            name: '',
+            email: '',
+            telephone: '',
+            carNumber: '',
+            timeDuration: '',
+            agreeToPrivacyPolicy: false,
+        };
+
+        const errors = {};
+
+        function displayQRCode(imageUrl) {
+        const qrCodePlaceholder = document.getElementById('qrCodePlaceholder');
+        const qrCodeImage = document.getElementById('qrCodeImage');
+
+        qrCodeImage.src = imageUrl;
+        qrCodePlaceholder.style.display = 'block';
+        document.getElementById('contentBeforePayment').style.display = 'none';
+      }
+        // Function to handle form submission
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+console.log(e);
+            // Client-side validation
+            const validationErrors = {};
+
+            // if (!formData.name.trim()) {
+            //     validationErrors.name = 'Name is required';
+            // }
+
+            // if (!formData.email.trim()) {
+            //     validationErrors.email = 'Email is required';
+            // }
+
+            // if (!formData.telephone.trim()) {
+            //     validationErrors.telephone = 'Phone number is required';
+            // }
+
+            // if (!formData.carNumber.trim()) {
+            //     validationErrors.carNumber = 'Car number is required';
+            // }
+
+            // Display validation errors...
+            // document.getElementById('name-error').textContent = validationErrors.name || '';
+            // document.getElementById('email-error').textContent = validationErrors.email || '';
+            // document.getElementById('telephone-error').textContent = validationErrors.telephone || '';
+            // document.getElementById('carNumber-error').textContent = validationErrors.carNumber || '';
+
+            if (Object.keys(validationErrors).length > 0) {
+              console.log('errr');
+                return;
+            }else{
+              
+            initRazorpay();
+            }
+            // Razorpay payment code...
+        }
+
+        // Function to handle form input changes
+        function handleChange(e) {
+            const { name, value, type, checked } = e.target;
+            formData[name] = type === 'checkbox' ? checked : value;
+        }
+
+        // Function to initialize Razorpay and handle payment
+       async function initRazorpay() {
+          const data = await fetch('https://parkingman-production.up.railway.app/api/create/order', {
+        method: 'POST',
+        // mode: 'no-cors',
+        body: JSON.stringify({
+          amount: 5000, // Amount in currency subunits (e.g., 50000 for 500.00 INR)
+          currency: 'INR',
+          receipt: "order_rcptid_11"
+        }),
+        headers: { 'Content-type': 'application/json' },
+    }).then((t) =>
+        // console.log(t)
+        t.json()
+    )
+    console.log(data);
+            // Replace 'YOUR_KEY_ID' with your actual Razorpay Key ID
+            const key = 'rzp_test_mSEHCojzJFuuF0';
+
+            const options = {
+                key,
+                amount: 5000, // Amount in currency subunits (e.g., 50000 for 500.00 INR)
+                currency: 'INR',
+                name: 'Acme Corp', // Your business name
+                description: 'Test Transaction',
+                image: 'https://example.com/your_logo',
+                order_id: `${data.order.id}`, // Replace with your actual Order ID
+                // callback_url: 'https://eneqd3r9zrjok.x.pipedream.net/',
+                handler: async function (response) {
+            console.log(response);
+            alert("Payment Successful");
+            // Create an object to hold the form data
+  const formData = {
+    name: document.querySelector('input[name="name"]').value,
+    email: document.querySelector('input[name="email"]').value,
+    phoneNumber: document.querySelector('input[name="telphone"]').value,
+    carNumber: document.querySelector('input[name="carnumber"]').value,
+    time: document.querySelector('select[name="time-duration"]').value
+  };
+
+  // Make an HTTP POST request to your API
+  try {
+    const response = await fetch('https://parkingman-production.up.railway.app/api/parking-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      // Request was successful
+      const responseData = await response.json();
+      // Handle the API response as needed
+      
+      console.log(responseData.message);
+      console.log(responseData.qrCode);
+     
+      const imageUrl =  responseData.qrCode;
+        displayQRCode(imageUrl);
+    } else {
+      // Request failed
+      console.error('API request failed');
+    }
+  } catch (error) {
+    console.error('An error occurred while sending the request:', error);
+  }
+        },
+                prefill: {
+                    name: 'Gaurav Kumar', // Customer's name
+                    email: 'gaurav.kumar@example.com',
+                    contact: '9000090000', // Customer's phone number
+                },
+                notes: {
+                    address: 'Razorpay Corporate Office',
+                },
+                theme: {
+                    color: '#3399cc',
+                },
+            };
+
+            const rzp1 = new Razorpay(options);
+
+            // Function to handle Razorpay payment dialog
+            // function handleClick() {
+                rzp1.open();
+            // }
+
+            // Attach the event listener to your button
+            // const payButton = document.getElementById('rzp-button1');
+            // if (payButton) {
+            //     payButton.addEventListener('click', handleClick);
+            // }
+
+            // Cleanup by removing the event listener when needed...
+        }
+
+        // Add event listeners or call functions as needed
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     // Initialize Razorpay
+        //     // initRazorpay();
+
+        //     // Add event listeners for form elements...
+           
+        // });
+        const form = document.querySelector('form');
+            form.addEventListener('submit', handleSubmit);
+
+            const inputs = document.querySelectorAll('input[name], select[name]');
+            inputs.forEach((input) => {
+                input.addEventListener('change', handleChange);
+            });
+    </script>
   </body>
+  
 </html>
